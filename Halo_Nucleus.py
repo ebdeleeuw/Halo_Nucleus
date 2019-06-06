@@ -266,7 +266,14 @@ class HaloInteraction:
             self.u[i+1]=(self.u[i]+step/6*np.dot(k,weights))
             self.z[i+1]=(self.z[i]+step/6*np.dot(l,weights))
 
-    def plot_wf(self,E,L,ini_d,radius=(0,100),color=['-b'],label=None):
+    def plot_attr_resize(self,size,resize):
+        if resize is None:
+            resize=[None]*len(size)
+        elif len(resize)!=len(size):
+            while len(resize) != len(size):
+                resize.append(None)
+        
+    def plot_wf(self,E,L,ini_d,radius=(0,100),color=None,label=None):
         """Plots the radial behavior of the scattering wavefunctions
 
         Parameters
@@ -285,6 +292,10 @@ class HaloInteraction:
             Label of plotted lines
 
         """
+
+        self.plot_attr_resize(E,color)
+        self.plot_attr_resize(E,label)
+            
         plt.style.use('ggplot')
         fig1,ax1=plt.subplots()
         ax2=ax1.twinx()
@@ -301,7 +312,7 @@ class HaloInteraction:
         ax1.set(xlim=(self.r.min(),self.r.max()), xlabel="R (fm)", ylabel="u(x)")
         ax2.set(ylabel="MeV")
 
-    def plot_phases(self,E,L,ini_d,radius=(0,100),color=['-b'],label=None):
+    def plot_phases(self,E,L,ini_d,radius=(0,100),color=None,label=None):
         """Plots the phase shifts of the scattering wavefunctions and regularizes them.
 
         Parameters
@@ -320,6 +331,10 @@ class HaloInteraction:
             Label of plotted lines
 
         """
+
+        self.plot_attr_resize(E,color)
+        self.plot_attr_resize(E,label)
+
         plt.style.use('ggplot')
         fig1,ax1=plt.subplots()
 
@@ -333,28 +348,4 @@ class HaloInteraction:
                 boundry_match=int(self.r.size*0.8) 
             phase[i]=self.phase_shift(boundry_match,self.r_matrix(boundry_match),j,L)
         ax1.plot(E,phase,color[0],label=label[0])
-
-
-if __name__ == "__main__":    
-
-    #Woods Saxon potential parameters for 11Be
-    V0=-61.1 #MeV
-    A=10
-    aws=0.65 #fm
-
-    energies=[0.1]*3
-    L_values=range(3)
-    initial_derivatives=[2,0.05,0.00005]
-
-    #energies=np.arange(0.1,3,0.1)
-    #L=1
-    #ini_d=1
-    
-    mu=931.494 #MeV/c^2 (1amu why not 1 neutron mass??)
-    Be_11=HaloInteraction(WoodsSaxon(V0,A,aws),mu)
-    
-    Be_11.plot_wf(energies,L_values,initial_derivatives,color=['-b','-r','-g'],label=['L=0','L=1','L=2'])
-    #Be_11.plot_phases(energies,L,ini_d,label=["L=0"])
-    plt.show()
-
 
